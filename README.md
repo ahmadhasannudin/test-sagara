@@ -1,6 +1,13 @@
 ### Requirements
 - redis : make sure you have redis for aynchronous process
 - php 8.3
+- please adjust your php.ini file configuration to allow large file upload
+    ```ini
+    upload_max_filesize =100M
+    post_max_size = 100M;
+    max_execution_time =6000 #in second
+    ```
+
 
 ## Manual Installation
 1. cp .env.example to .env , adjust the setting 

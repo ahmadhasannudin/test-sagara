@@ -16,7 +16,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button wire:click="closeForm" class="btn btn-secondary">Cancel</button>
+                    <button type="button" wire:click="closeForm" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">Import</button>
                 </div>
             </form>

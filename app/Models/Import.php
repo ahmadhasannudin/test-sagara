@@ -10,10 +10,12 @@ class Import extends Model {
     use HasFactory, WithUuid;
     protected $fillable = [
         'status',
+        'total_rows',
         'success_rows',
         'failed_rows',
         'time_elapsed',
         'link_to_failed_rows_file',
         'file',
+        'errors',
     ];
 }

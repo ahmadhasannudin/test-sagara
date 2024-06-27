@@ -13,11 +13,13 @@ return new class extends Migration {
         Schema::create('imports', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('status');
+            $table->integer('total_rows');
             $table->integer('success_rows');
             $table->integer('failed_rows');
             $table->integer('time_elapsed');
             $table->string('link_to_failed_rows_file');
             $table->string('file');
+            $table->text('errors')->nullable();
             $table->timestamps();
         });
     }

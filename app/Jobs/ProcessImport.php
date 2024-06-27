@@ -9,8 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ProcessImport implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -32,52 +30,29 @@ class ProcessImport implements ShouldQueue {
     public function handle()
     {
         $startTime = Carbon::now();
-
-        $import = Import::find($this->id);
-
-        $totalRows = 0;
-        $successfulRows = 0;
-        $failedRows = 0;
+        $totalRows = count(file(storage_path('app/' . $this->filePath))) - 1;
         $failedRowsData = [];
+        $isHeader = true;
 
-        if (($handle = fopen(storage_path('app/' . $this->filePath), 'r')) !== FALSE) {
-            while (($chunk = $this->getChunk($handle)) !== FALSE) {
-                foreach ($chunk as $row) {
-                    $totalRows++;
-                    try {
-                        // Implement your import logic here
-                        // Example:
-                        // Model::create([...]);
+        if (($fileHandle = fopen(storage_path('app/' . $this->filePath), 'r')) === false) {
+            return;
+        }
+        $import = Import::find($this->id);
+        $import->total_rows = $totalRows;
 
-                        $successfulRows++;
-                    } catch (\Exception $e) {
-                        $failedRows++;
-                        $failedRowsData[] = $row;
-                        Log::error('Error importing row ' . $totalRows . ': ' . $e->getMessage());
-                    }
-                }
+        while (($chunk = $this->getChunk($fileHandle)) !== FALSE) {
+            if ($isHeader) {
+                $isHeader = false;
+                $failedRowsData[] = array_shift($chunk);
+
+                $import->link_to_failed_rows_file = $this->arrayToCsv($failedRowsData);
+                $import->time_elapsed = $startTime->diffInMilliseconds(Carbon::now());
+                $import->save();
             }
-            fclose($handle);
+            InsertChunk::dispatch($chunk, $this->id);
         }
+        fclose($fileHandle);
 
-        $failedRowsFile = null;
-        if (count($failedRowsData) > 0) {
-            $failedRowsFile = 'failed_imports/' . $this->id . '_failed_rows.csv';
-            Storage::put($failedRowsFile, $this->arrayToCsv($failedRowsData));
-        }
-
-        $duration = $startTime->diffInSeconds(Carbon::now());
-
-        $import->update([
-            'total_rows' => $totalRows,
-            'successful_rows' => $successfulRows,
-            'failed_rows' => $failedRows,
-            'failed_rows_file' => $failedRowsFile,
-            'duration' => $duration,
-        ]);
-
-        // Trigger notification or broadcast event
-        // Example: event(new ImportCompleted($import));
     }
 
     protected function getChunk($handle)
@@ -93,17 +68,14 @@ class ProcessImport implements ShouldQueue {
 
         return count($chunk) > 0 ? $chunk : FALSE;
     }
-
     protected function arrayToCsv($data)
     {
-        $output = fopen('php://temp', 'r+');
+        $filename = 'imports/' . $this->id . date('His') . '.csv';
+        $output = fopen(storage_path('app/' . $filename), 'a+');
         foreach ($data as $row) {
             fputcsv($output, $row);
         }
-        rewind($output);
-        $csv = stream_get_contents($output);
         fclose($output);
-
-        return $csv;
+        return $filename;
     }
 }
