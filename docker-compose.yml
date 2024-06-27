@@ -1,0 +1,77 @@
+version: '3.8'
+services:
+  # php
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: laravel-coding-collective
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - laravel-network
+  # queue
+  queue:
+    image: laravel-coding-collective
+    container_name: queue
+    restart: always
+    depends_on:
+      - app
+    volumes:
+      - ./:/var/www/html
+    entrypoint: php /var/www/html/artisan queue:work --verbose --tries=3 --timeout=60
+    networks:
+      - laravel-network
+  # redis
+  redis:
+    image: redis:7.2.0-alpine
+    restart: unless-stopped
+    container_name: redis-server
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+    ports:
+        - "8001:6379"
+    volumes:
+      - ./docker/redis:/data
+  # nginx
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - laravel-network
+  # mysql
+  db:
+    image: mysql:8.1
+    container_name: mysql-dev
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./docker/mysql-data:/var/lib/mysql
+    networks:
+      - laravel-network
+# Networks
+networks:
+  laravel-network:
+    driver: bridge
+# Volumes
+volumes:
+  db:
+    driver: local
