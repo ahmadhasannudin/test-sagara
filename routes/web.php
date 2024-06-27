@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\Auth\Login;
+use App\Livewire\Auth\Register;
 use App\Livewire\ImportManager;
 use App\Livewire\Kabupaten;
 use App\Livewire\Provinsi;
@@ -19,9 +21,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect('/import');
+    return redirect('/login');
 });
-Route::get('/provinsi', Provinsi::class)->name('provinsi');
-Route::get('/kabupaten', Kabupaten::class)->name('kabupaten');
-Route::get('/report', Report::class)->name('report');
-Route::get('/import', ImportManager::class)->name('import');
+Route::group(['middleware' => 'guest'], function () {
+    Route::get('/login', Login::class)->name('login');
+    Route::get('/register', Register::class)->name('register');
+});
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/logout', function () {
+        auth()->logout();
+        return redirect('/login');
+    })->name('logout');
+    Route::get('/provinsi', Provinsi::class)->name('provinsi');
+    Route::get('/kabupaten', Kabupaten::class)->name('kabupaten');
+    Route::get('/report', Report::class)->name('report');
+    Route::get('/import', ImportManager::class)->name('import');
+});
