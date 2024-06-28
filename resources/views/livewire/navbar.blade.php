@@ -23,11 +23,11 @@
                 <li class="nav-item {{ $currentRoute == 'import' ? 'active' : '' }}">
                     <a class="nav-link" wire:navigate href="{{ route('import') }}">Import</a>
                 </li>
-                <li class="nav-item {{ $currentRoute == 'provinsi' ? 'active' : '' }}">
-                    <a class="nav-link" wire:navigate href="{{ route('provinsi') }}">Provinsi</a>
+                <li class="nav-item {{ $currentRoute == 'service' ? 'active' : '' }}">
+                    <a class="nav-link" wire:navigate href="{{ route('service') }}">Service</a>
                 </li>
-                <li class="nav-item {{ $currentRoute == 'kabupaten' ? 'active' : '' }}">
-                    <a class="nav-link" wire:navigate href="{{ route('kabupaten') }}">Kabupaten</a>
+                <li class="nav-item {{ $currentRoute == 'tag' ? 'active' : '' }}">
+                    <a class="nav-link" wire:navigate href="{{ route('tag') }}">Tag</a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto">

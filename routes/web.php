@@ -3,10 +3,8 @@
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\ImportManager;
-use App\Livewire\Kabupaten;
-use App\Livewire\Provinsi;
-use App\Livewire\Report;
-use App\Livewire\Show;
+use App\Livewire\ServiceManager;
+use App\Livewire\TagManager;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,8 +30,7 @@ Route::group(['middleware' => 'auth'], function () {
         auth()->logout();
         return redirect('/login');
     })->name('logout');
-    Route::get('/provinsi', Provinsi::class)->name('provinsi');
-    Route::get('/kabupaten', Kabupaten::class)->name('kabupaten');
-    Route::get('/report', Report::class)->name('report');
     Route::get('/import', ImportManager::class)->name('import');
+    Route::get('/tag', TagManager::class)->name('tag');
+    Route::get('/service', ServiceManager::class)->name('service');
 });
