@@ -1,8 +1,8 @@
 <div>
 
-    @include('livewire.service.form')
+    @include('livewire.product.form')
     <div>
-        <h1>Service</h1>
+        <h1>Product</h1>
         @if (session()->has('message'))
             <div class="alert alert-success">
                 {{ session('message') }}
@@ -34,24 +34,26 @@
                 </form>
             </div>
             <div class="col-6">
-                <button wire:click="openForm" class="btn float-end mb-3 btn-primary">+ Service</button>
+                <button wire:click="openForm" class="btn float-end mb-3 btn-primary">+ Product</button>
             </div>
         </div>
         <table class="table table-bordered mt-5">
             <thead>
                 <tr>
                     <th class="text-center">Name</th>
-                    <th width="200px" class="text-center">Base</th>
-                    <th width="200px" class="text-center">Selling</th>
+                    <th width="150px" class="text-center">Quantity</th>
+                    <th width="150px" class="text-center">Purchase</th>
+                    <th width="150px" class="text-center">Sell</th>
                     <th class="text-center">Tags</th>
                     <th width="200px" class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($services as $p)
+                @foreach ($products as $p)
                     <tr>
                         <td>{{ $p->name }}</td>
-                        <td class="text-end">{{ number_format($p->base_price, 0, ',') }}</td>
+                        <td class="text-end">{{ $p->quantity }}</td>
+                        <td class="text-end">{{ number_format($p->purchasing_price, 0, ',') }}</td>
                         <td class="text-end">{{ number_format($p->selling_price, 0, ',') }}</td>
                         <td class="text-start">{{ $p->readableTags() }}</td>
                         <td class="text-center">
@@ -62,7 +64,7 @@
                 @endforeach
             </tbody>
         </table>
-        {{ $services->links() }}
+        {{ $products->links() }}
     </div>
 </div>
 <script>

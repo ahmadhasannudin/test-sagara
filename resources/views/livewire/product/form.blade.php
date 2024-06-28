@@ -3,21 +3,28 @@
         <div class="modal-content">
             <form wire:submit.prevent="store">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ $service_id ? 'Edit' : 'Tambah' }} Service</h5>
+                    <h5 class="modal-title">{{ $product_id ? 'Edit' : 'Tambah' }} Product</h5>
                     <button type="button" class="btn-close" wire:click="closeForm"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-2">
-                        <label>Service Name</label>
+                        <label>Product Name</label>
                         <input type="text" class="form-control" wire:model="name">
                         @error('name')
                             <span class="text-red-500">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="mb-2">
-                        <label>Base Price</label>
-                        <input type="number" class="form-control" wire:model="base_price">
-                        @error('base_price')
+                        <label>Quantity</label>
+                        <input type="number" class="form-control" wire:model="quantity">
+                        @error('quantity')
+                            <span class="text-red-500">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="mb-2">
+                        <label>Purchasing Price</label>
+                        <input type="number" class="form-control" wire:model="purchasing_price">
+                        @error('purchasing_price')
                             <span class="text-red-500">{{ $message }}</span>
                         @enderror
                     </div>
@@ -40,7 +47,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">{{ $service_id ? 'Update' : 'Save' }}</button>
+                    <button type="submit" class="btn btn-primary">{{ $product_id ? 'Update' : 'Save' }}</button>
                     <button type="button" wire:click="closeForm" class="btn btn-secondary">Cancel</button>
                 </div>
             </form>

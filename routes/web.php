@@ -4,6 +4,7 @@ use App\Http\Controllers\TagController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\ImportManager;
+use App\Livewire\ProductManager;
 use App\Livewire\ServiceManager;
 use App\Livewire\TagManager;
 use Illuminate\Support\Facades\Route;
@@ -35,4 +36,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/tag', TagManager::class)->name('tag');
     Route::get('/select-tag', [TagController::class, 'select'])->name('select-tag');
     Route::get('/service', ServiceManager::class)->name('service');
+    Route::get('/product', ProductManager::class)->name('product');
 });

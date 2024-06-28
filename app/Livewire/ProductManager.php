@@ -2,24 +2,25 @@
 
 namespace App\Livewire;
 
-use App\Models\Service;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class ServiceManager extends Component {
+class ProductManager extends Component {
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
-    public $name, $base_price, $selling_price, $tagInput, $service_id,
+    public $name, $quantity, $purchasing_price, $selling_price, $tagInput, $product_id,
     $searchTags, $searchName;
+
 
     public function render()
     {
         return view(
-            'livewire.service.index',
+            'livewire.product.index',
             [
-                'services' => Service::orderBy('name')
+                'products' => Product::orderBy('name')
                     ->where(function ($query) {
                         if (!empty($this->searchName))
                             $query->whereRaw('LOWER(name) like ?', ['%' . strtolower($this->searchName) . '%']);
@@ -46,12 +47,13 @@ class ServiceManager extends Component {
         $this->validate([
             'name' => ['required'],
             'tagInput' => 'nullable|array',
-            'base_price' => 'required|numeric|gt:0',
+            'quantity' => 'required|numeric|gt:0',
+            'purchasing_price' => 'required|numeric|gt:0',
             'selling_price' => 'required|numeric|gt:0',
         ]);
         if (
-            Service::where('name', $this->name)
-                ->where('id', '!=', $this->service_id)->exists()
+            Product::where('name', $this->name)
+                ->where('id', '!=', $this->product_id)->exists()
         ) {
             $error = ValidationException::withMessages([
                 'name' => ['Name already exist'],
@@ -59,23 +61,23 @@ class ServiceManager extends Component {
             throw $error;
         }
 
-
         try {
             DB::beginTransaction();
-            $service = Service::updateOrCreate(['id' => $this->service_id], [
+            $product = Product::updateOrCreate(['id' => $this->product_id], [
                 'name' => $this->name,
-                'base_price' => $this->base_price,
+                'quantity' => $this->quantity,
+                'purchasing_price' => $this->purchasing_price,
                 'selling_price' => $this->selling_price,
             ]);
-            $service->tags()->sync($this->tagInput);
+            $product->tags()->sync($this->tagInput);
             DB::commit();
             session()->flash(
                 'message',
-                $this->service_id ? 'Service Updated Successfully.' : 'Service Created Successfully.'
+                $this->product_id ? 'Product Updated Successfully.' : 'Product Created Successfully.'
             );
             $this->name = null;
-            $this->service_id = null;
-            $this->base_price = null;
+            $this->product_id = null;
+            $this->purchasing_price = null;
             $this->selling_price = null;
             $this->tagInput = null;
         } catch (\Throwable $th) {
@@ -91,19 +93,20 @@ class ServiceManager extends Component {
     }
     public function delete($id)
     {
-        $service = Service::find($id);
-        $service->delete();
-        $service->tags()->detach();
-        session()->flash('message', 'Service Deleted Successfully.');
+        $product = Product::find($id);
+        $product->delete();
+        $product->tags()->detach();
+        session()->flash('message', 'Product Deleted Successfully.');
     }
     public function edit($id)
     {
-        $service = Service::find($id);
-        $tags = $service->tags;
-        $this->service_id = $id;
-        $this->name = $service->name;
-        $this->base_price = $service->base_price;
-        $this->selling_price = $service->selling_price;
+        $product = Product::find($id);
+        $tags = $product->tags;
+        $this->product_id = $id;
+        $this->name = $product->name;
+        $this->quantity = $product->quantity;
+        $this->purchasing_price = $product->purchasing_price;
+        $this->selling_price = $product->selling_price;
         $this->openForm();
         $this->dispatch('changeTag', $tags);
     }

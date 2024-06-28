@@ -26,6 +26,9 @@
                 <li class="nav-item {{ $currentRoute == 'service' ? 'active' : '' }}">
                     <a class="nav-link" wire:navigate href="{{ route('service') }}">Service</a>
                 </li>
+                <li class="nav-item {{ $currentRoute == 'product' ? 'active' : '' }}">
+                    <a class="nav-link" wire:navigate href="{{ route('product') }}">Product</a>
+                </li>
                 <li class="nav-item {{ $currentRoute == 'tag' ? 'active' : '' }}">
                     <a class="nav-link" wire:navigate href="{{ route('tag') }}">Tag</a>
                 </li>
