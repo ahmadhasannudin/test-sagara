@@ -19,6 +19,10 @@
         .nav-item.active>a.nav-link {
             color: white;
         }
+
+        .select2-container .select2-selection--single {
+            height: 40px !important;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
@@ -35,16 +39,25 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        function get_select2_ajax_options(url, extraFilter = null) {
+        let itemSelect2 = {};
+
+        function get_select2_ajax_options(url, name = null) {
             return {
                 url: url,
                 dataType: 'json',
                 type: 'get',
                 delay: 250,
                 data: function(params) {
-                    return get_select2_search_term(params, extraFilter);
+                    return get_select2_search_term(params);
                 },
                 processResults: function(data, params) {
+                    if (name) {
+                        // itemSelect2[name][data.items.id] = data.items;
+                        itemSelect2[name] = data.items.reduce((obj, item) => {
+                            obj[item.id] = item;
+                            return obj;
+                        }, {});
+                    }
                     return {
                         results: data.items,
                         'pagination': {
@@ -56,14 +69,14 @@
             };
         }
 
-        function get_select2_search_term(params, extraFilter) {
+        function get_select2_search_term(params) {
             var search_term = {
                 q: params.term || '', // search term
                 page_limit: 10,
                 page: params.page || 1
             };
 
-            Object.assign(search_term, extraFilter)
+            Object.assign(search_term)
 
             return search_term;
         }

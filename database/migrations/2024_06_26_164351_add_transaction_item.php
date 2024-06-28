@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('transaction_items', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('transaction_id')->references('id')->on('transactions')->constrained()->cascadeOnDelete();
+            $table->text('item_name');
             $table->integer('quantity');
             $table->decimal('price', 18, 2);
             $table->uuidMorphs('item');

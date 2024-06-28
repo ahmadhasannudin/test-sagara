@@ -32,6 +32,9 @@
                 <li class="nav-item {{ $currentRoute == 'tag' ? 'active' : '' }}">
                     <a class="nav-link" wire:navigate href="{{ route('tag') }}">Tag</a>
                 </li>
+                <li class="nav-item {{ $currentRoute == 'transaction' ? 'active' : '' }}">
+                    <a class="nav-link" wire:navigate href="{{ route('transaction') }}">Transaction</a>
+                </li>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown" style="padding-right: 50px">

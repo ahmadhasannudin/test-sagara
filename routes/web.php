@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TransactionController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\ImportManager;
 use App\Livewire\ProductManager;
 use App\Livewire\ServiceManager;
 use App\Livewire\TagManager;
+use App\Livewire\TransactionManager;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,4 +39,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/select-tag', [TagController::class, 'select'])->name('select-tag');
     Route::get('/service', ServiceManager::class)->name('service');
     Route::get('/product', ProductManager::class)->name('product');
+    Route::get('/transaction', TransactionManager::class)->name('transaction');
+    Route::get('/select-product', [TransactionController::class, 'selectProduct'])->name('select-product');
+    Route::get('/select-service', [TransactionController::class, 'selectService'])->name('select-service');
 });
