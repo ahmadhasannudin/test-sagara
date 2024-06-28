@@ -42,7 +42,7 @@
                                         <td>{{ $item['item_type'] }} - {{ $item['item_name'] }}</td>
                                         <td>
                                             @if ($item['item_type'] == 'product')
-                                                <input style="width:100px"
+                                                <input style="width:100px" class="updateQuantity"
                                                     wire:change="updateQuantity('{{ $item['item_type'] . '-' . $item['item_id'] }}',$event.target.value)"
                                                     type="number" class="form-control" value="{{ $item['quantity'] }}">
                                                 @error($item['item_type'] . '-' . $item['item_id'])
@@ -89,6 +89,7 @@
     });
 
     window.addEventListener('openForm', event => {
+        $('.updateQuantity').trigger('change');
         $('#form').modal('show')
         $(document).ready(function() {
             $('#tagInput').select2({

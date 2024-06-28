@@ -62,16 +62,29 @@ class TransactionManager extends Component {
             $transaction = Transaction::updateOrCreate(['id' => $this->transaction_id], [
                 'amount' => $this->calculateTotal(),
             ]);
+            $existingItemIds = TransactionItem::where('transaction_id', $transaction->id)
+                ->pluck('item_id')
+                ->toArray();
+
+            $submittedItemIds = array_column($this->transactionItem, 'item_id');
+            $itemsToDelete = array_diff($existingItemIds, $submittedItemIds);
+            TransactionItem::where('transaction_id', $transaction->id)
+                ->whereIn('item_id', $itemsToDelete)
+                ->delete();
             $updatedProduct = [];
             foreach ($this->transactionItem as $item) {
-                TransactionItem::create([
-                    'transaction_id' => $transaction->id,
-                    'item_id' => $item['item_id'],
-                    'item_type' => $item['item_type'] == 'product' ? 'App\Models\Product' : 'App\Models\Service',
-                    'item_name' => $item['item_name'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                ]);
+                TransactionItem::updateOrCreate(
+                    [
+                        'transaction_id' => $transaction->id,
+                        'item_id' => $item['item_id'],
+                        'item_type' => $item['item_type'] == 'product' ? 'App\Models\Product' : 'App\Models\Service',
+                    ],
+                    [
+                        'item_name' => $item['item_name'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ]
+                );
                 if ($item['item_type'] == 'product') {
                     if (!isset($updatedProduct[$item['item_id']]))
                         $updatedProduct[$item['item_id']] = 0;
@@ -79,7 +92,7 @@ class TransactionManager extends Component {
                 }
             }
             foreach ($updatedProduct as $id => $quantity) {
-                Product::find($id)->decrement('quantity', empty($this->transaction_id) ? $quantity : $this->transactionItem['product-' . $id]['old_quantity'] - $quantity);
+                Product::find($id)->decrement('quantity', empty($this->transaction_id) ? $quantity : $quantity - $this->transactionItem['product-' . $id]['old_quantity']);
             }
             DB::commit();
             session()->flash(
