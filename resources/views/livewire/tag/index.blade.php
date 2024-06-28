@@ -2,7 +2,7 @@
 
     @include('livewire.tag.form')
     <div>
-        <h1>Provinsi</h1>
+        <h1>Tag</h1>
         @if (session()->has('message'))
             <div class="alert alert-success">
                 {{ session('message') }}

@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('taggables', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->uuid('id')->primary()->default(DB::raw('(UUID())'));
             $table->foreignUuid('tag_id')->references('id')->on('tags')->constrained()->cascadeOnDelete();
             $table->uuidMorphs('taggable');
             $table->timestamps();

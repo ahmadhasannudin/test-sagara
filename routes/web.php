@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TagController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\ImportManager;
@@ -32,5 +33,6 @@ Route::group(['middleware' => 'auth'], function () {
     })->name('logout');
     Route::get('/import', ImportManager::class)->name('import');
     Route::get('/tag', TagManager::class)->name('tag');
+    Route::get('/select-tag', [TagController::class, 'select'])->name('select-tag');
     Route::get('/service', ServiceManager::class)->name('service');
 });
